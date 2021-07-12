@@ -1,8 +1,6 @@
 FROM ubuntu:xenial
 
-RUN apt-key adv --keyserver ha.pool.sks-keyservers.net --recv-keys B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8 \
-  && echo 'deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main' 11  > /etc/apt/sources.list.d/pgdg.list \
-  && apt-get update -qq \
+RUN apt-get update -qq \
   && apt-get upgrade -yq \
   && DEBIAN_FRONTEND=noninteractive apt-get install -yq --no-install-recommends \
     locales \
@@ -16,9 +14,7 @@ RUN apt-key adv --keyserver ha.pool.sks-keyservers.net --recv-keys B97B0AFCAA1A4
     pkg-config \
     libcurl3-dev \
     libssl-dev \
-    libpq-dev \
     libgmp3-dev \
-    postgresql-client-11 \
     git-core \
     ssh \
     libmagickcore-dev \
@@ -34,6 +30,12 @@ RUN apt-key adv --keyserver ha.pool.sks-keyservers.net --recv-keys B97B0AFCAA1A4
     gnupg2 \
     tzdata \
     dirmngr \
+  && curl -L https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - \
+  && echo 'deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main' 11 > /etc/apt/sources.list.d/pgdg.list \
+  && apt-get update -qq \
+  && DEBIAN_FRONTEND=noninteractive apt-get install -yq --no-install-recommends \
+    libpq-dev \
+    postgresql-client-11 \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
   && truncate -s 0 /var/log/*log
@@ -52,7 +54,7 @@ ENV LC_ALL en_US.UTF-8
 ENV RVM_PATH /usr/local/rvm
 ENV RVM ${RVM_PATH}/bin/rvm
 ENV RVM_RUBY ruby-2.3.8
-RUN gpg2 --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB \
+RUN gpg2 --keyserver hkp://pgp.mit.edu/ --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB \
   && (\curl -ksSL https://get.rvm.io | bash -s stable)
 RUN $RVM install $RVM_RUBY
 ENV GEM_HOME /gems
